@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PizzaHap — Crafted Fire. Real Flavor.</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{
+  --fire:#FF4500;--ember:#FF6B1A;--gold:#FFB347;
+  --cream:#FFF8F0;--dark:#0D0905;--char:#1A120B;
+  --smoke:#2E1F0F;--ash:#9B7F6E;
+  --veg:#2e7d32;--nonveg:#c62828;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--dark);color:var(--cream);font-family:'DM Sans',sans-serif;overflow-x:hidden;}
+#cur,#cur2{pointer-events:none;position:fixed;z-index:99999;border-radius:50%;}
+#cur{width:14px;height:14px;background:var(--fire);box-shadow:0 0 12px var(--fire),0 0 24px rgba(255,69,0,.4);}
+#cur2{width:38px;height:38px;border:2px solid var(--ember);opacity:.65;top:0;left:0;}
+@media(hover:none){#cur,#cur2{display:none;}}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:var(--fire);border-radius:4px;}
+
+/* NAV */
+nav{position:fixed;top:0;width:100%;z-index:1000;padding:1.2rem 5%;display:flex;align-items:center;justify-content:space-between;transition:all .4s;}
+nav.sc{background:rgba(13,9,5,.97);backdrop-filter:blur(20px);padding:.8rem 5%;border-bottom:1px solid rgba(255,69,0,.18);}
+.logo{display:flex;align-items:center;text-decoration:none;}
+.logo img{height:60px;width:auto;display:block;}
+.nav-links{display:flex;gap:1.8rem;list-style:none;align-items:center;}
+.nav-links a{color:var(--cream);text-decoration:none;font-size:.78rem;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;position:relative;transition:color .3s;}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1.5px;background:var(--fire);transition:width .3s;}
+.nav-links a:hover{color:var(--gold);}
+.nav-links a:hover::after{width:100%;}
+.ncta{background:linear-gradient(135deg,var(--fire),var(--ember))!important;color:#fff!important;padding:.5rem 1.2rem;border-radius:4px;font-weight:700!important;box-shadow:0 0 22px rgba(255,69,0,.35);}
+.ncta::after{display:none!important;}
+.hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;z-index:1001;position:relative;}
+.hbg span{width:24px;height:2px;background:var(--cream);display:block;transition:.3s;}
+.hbg.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px);}
+.hbg.open span:nth-child(2){opacity:0;}
+.hbg.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px);}
+
+/* HERO */
+.hero{position:relative;height:100vh;min-height:600px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.hslide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.4s ease;z-index:0;}
+.hslide.on{opacity:1;}
+.hslide::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(13,9,5,.88) 40%,rgba(255,69,0,.06));}
+.hero-cont{position:relative;z-index:2;text-align:center;max-width:900px;padding:0 1.2rem;}
+.hero-tag{display:inline-block;font-size:.7rem;letter-spacing:4px;text-transform:uppercase;color:var(--ember);border:1px solid rgba(255,107,26,.4);padding:.35rem 1.2rem;margin-bottom:1.4rem;animation:fiu .8s ease both;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.6rem,9vw,6.5rem);line-height:.92;letter-spacing:4px;animation:fiu .9s ease .2s both;}
+.hero-title span{background:linear-gradient(135deg,var(--fire),var(--gold),var(--ember));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block;}
+.hero-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(.88rem,2vw,1.25rem);color:var(--ash);margin:1.2rem 0 2.2rem;animation:fiu .9s ease .4s both;}
+.hero-btns{display:flex;gap:.8rem;justify-content:center;flex-wrap:wrap;animation:fiu .9s ease .6s both;}
+.btn-fire{background:linear-gradient(135deg,var(--fire),var(--ember));color:#fff;padding:.85rem 2rem;font-size:.82rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border-radius:4px;box-shadow:0 0 30px rgba(255,69,0,.4);transition:all .3s;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;font-family:'DM Sans',sans-serif;}
+.btn-fire:hover{box-shadow:0 0 60px rgba(255,69,0,.75);transform:translateY(-3px);}
+.btn-out{background:transparent;color:var(--cream);padding:.85rem 2rem;font-size:.82rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border-radius:4px;border:1.5px solid rgba(255,248,240,.3);transition:all .3s;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;font-family:'DM Sans',sans-serif;}
+.btn-out:hover{border-color:var(--fire);color:var(--gold);}
+.h-dots{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;gap:.5rem;z-index:3;}
+.dot{width:26px;height:3px;background:rgba(255,248,240,.25);cursor:pointer;transition:all .4s;border:none;border-radius:3px;}
+.dot.on{width:52px;background:var(--fire);}
+
+/* TICKER */
+.ticker{background:linear-gradient(90deg,var(--fire),var(--ember),var(--gold),var(--ember),var(--fire));padding:.6rem 0;overflow:hidden;}
+.t-track{display:flex;width:max-content;animation:tick 28s linear infinite;}
+.t-item{font-family:'Bebas Neue',sans-serif;font-size:.85rem;letter-spacing:4px;color:#fff;padding:0 2rem;white-space:nowrap;}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ABOUT */
+.about-sec{padding:5rem 5%;}
+.about-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+.ab-img-w{position:relative;}
+.ab-img{width:100%;aspect-ratio:4/5;border-radius:8px;overflow:hidden;}
+.ab-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s;}
+.ab-img:hover img{transform:scale(1.05);}
+.ab-badge{position:absolute;bottom:-1.2rem;right:-1.2rem;width:105px;height:105px;background:linear-gradient(135deg,var(--fire),var(--ember));border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:.65rem;text-align:center;box-shadow:0 0 35px rgba(255,69,0,.55);animation:bspin 18s linear infinite;}
+.ab-badge .bn{font-size:1.9rem;line-height:1;}
+@keyframes bspin{to{transform:rotate(360deg)}}
+.ab-stats{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:2rem;}
+.st{padding:1.1rem;border:1px solid rgba(255,69,0,.15);border-radius:6px;background:rgba(255,69,0,.04);transition:all .3s;}
+.st:hover{border-color:var(--fire);transform:translateY(-4px);}
+.sn{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:2px;background:linear-gradient(135deg,var(--fire),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;}
+.sl{font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--ash);margin-top:.3rem;}
+.slbl{font-size:.68rem;letter-spacing:5px;text-transform:uppercase;color:var(--fire);margin-bottom:.8rem;}
+.stitle{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4.5vw,3.6rem);letter-spacing:3px;line-height:1;color:var(--cream);}
+.stitle em{font-family:'Playfair Display',serif;font-style:italic;color:var(--ember);}
+.ab-p{color:var(--ash);line-height:1.9;margin-bottom:1rem;font-size:.9rem;}
+.ab-p strong{color:var(--cream);}
+.pill{display:inline-flex;align-items:center;gap:.4rem;background:rgba(255,69,0,.1);border:1px solid rgba(255,69,0,.3);padding:.3rem .85rem;border-radius:50px;font-size:.7rem;color:var(--ember);letter-spacing:1px;margin:.2rem;}
+
+/* APP BANNER */
+.app-ban{background:linear-gradient(135deg,var(--char),var(--smoke));margin:0 5%;border-radius:10px;padding:3rem 3.5rem;display:flex;align-items:center;justify-content:space-between;border:1px solid rgba(255,179,71,.22);position:relative;overflow:hidden;gap:2rem;}
+.app-ban::before{content:'';position:absolute;top:-50%;right:-8%;width:400px;height:400px;background:radial-gradient(circle,rgba(255,69,0,.13),transparent 70%);pointer-events:none;}
+.app-ban h3{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:3px;color:var(--gold);margin-bottom:.5rem;}
+.app-ban p{color:var(--ash);font-size:.86rem;max-width:400px;line-height:1.8;}
+.pbadge{background:linear-gradient(135deg,var(--fire),var(--ember));color:#fff;padding:.4rem 1rem;border-radius:50px;font-size:.66rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;display:inline-flex;align-items:center;gap:.4rem;margin-bottom:.6rem;animation:pulse 2.2s ease infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,69,0,.45)}50%{box-shadow:0 0 0 14px rgba(255,69,0,0)}}
+.gplay{display:inline-flex;align-items:center;gap:.8rem;background:#fff;color:#111;padding:.75rem 1.6rem;border-radius:8px;text-decoration:none;font-weight:700;font-size:.83rem;transition:all .3s;margin-top:.9rem;}
+.gplay:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(255,69,0,.3);}
+.phone-ico{position:relative;z-index:1;animation:fl2 3s ease-in-out infinite;color:var(--gold);font-size:5.5rem;filter:drop-shadow(0 20px 40px rgba(255,179,71,.35));}
+@keyframes fl2{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-16px) rotate(3deg)}}
+
+/* ═══ MENU SECTION ═══ */
+.menu-sec{padding:5rem 5%;background:var(--char);position:relative;}
+.menu-sec::before,.menu-sec::after{content:'';position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--fire),transparent);}
+.menu-sec::before{top:0;}.menu-sec::after{bottom:0;}
+.mhdr{text-align:center;max-width:600px;margin:0 auto 2.5rem;}
+.mhdr p{color:var(--ash);margin-top:.8rem;font-size:.88rem;}
+.delivery-notice{background:linear-gradient(135deg,rgba(255,69,0,.15),rgba(255,179,71,.1));border:1px solid rgba(255,179,71,.35);border-radius:8px;padding:.85rem 1.4rem;margin:0 auto 2rem;max-width:480px;text-align:center;font-size:.82rem;color:var(--gold);font-weight:600;letter-spacing:.5px;}
+.delivery-notice i{color:var(--fire);margin-right:.4rem;}
+
+/* TABS */
+.tabs{display:flex;justify-content:flex-start;gap:.4rem;margin-bottom:2.2rem;flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:.5rem 1rem;background:transparent;border:1px solid rgba(255,248,240,.15);color:var(--ash);font-family:'DM Sans',sans-serif;font-size:.72rem;letter-spacing:1.5px;text-transform:uppercase;border-radius:50px;cursor:pointer;transition:all .3s;white-space:nowrap;flex-shrink:0;}
+.tab.on,.tab:hover{background:var(--fire);border-color:var(--fire);color:#fff;box-shadow:0 0 14px rgba(255,69,0,.35);}
+
+/* CATEGORY */
+.menu-category{margin-bottom:2.8rem;}
+.cat-title{font-family:'Bebas Neue',sans-serif;font-size:1.55rem;letter-spacing:3px;color:var(--gold);margin-bottom:1.1rem;padding-bottom:.55rem;border-bottom:1px solid rgba(255,179,71,.15);display:flex;align-items:center;gap:.7rem;}
+.cat-title i{color:var(--fire);}
+
+/* MENU GRID */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;}
+
+/* MENU CARD */
+.mcard{background:var(--dark);border-radius:8px;overflow:hidden;border:1px solid rgba(255,69,0,.08);transition:all .35s;display:flex;flex-direction:column;}
+.mcard:hover{transform:translateY(-6px);border-color:rgba(255,69,0,.3);box-shadow:0 16px 45px rgba(255,69,0,.14);}
+.mcard-img{height:165px;overflow:hidden;position:relative;flex-shrink:0;}
+.mcard-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s;display:block;}
+.mcard:hover .mcard-img img{transform:scale(1.08);}
+.mcard-img::after{content:'';position:absolute;bottom:0;left:0;right:0;height:55px;background:linear-gradient(transparent,var(--dark));}
+.img-ph{width:100%;height:100%;background:linear-gradient(135deg,rgba(255,69,0,.1),rgba(255,179,71,.06));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;color:var(--ash);}
+.img-ph i{font-size:2rem;color:rgba(255,69,0,.3);}
+.img-ph span{font-size:.62rem;letter-spacing:2px;text-transform:uppercase;}
+.type-dot{position:absolute;top:.55rem;left:.55rem;width:20px;height:20px;border-radius:3px;border:1.5px solid;display:flex;align-items:center;justify-content:center;z-index:2;background:rgba(13,9,5,.85);}
+.type-dot.veg{border-color:var(--veg);}
+.type-dot.veg::after{content:'';width:9px;height:9px;border-radius:50%;background:var(--veg);}
+.type-dot.nonveg{border-color:var(--nonveg);}
+.type-dot.nonveg::after{content:'';width:9px;height:9px;border-radius:50%;background:var(--nonveg);}
+.mcard-body{padding:.95rem 1.1rem 1.1rem;flex:1;display:flex;flex-direction:column;}
+.mcard-name{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:1.5px;color:var(--cream);line-height:1.1;}
+.mcard-desc{font-size:.74rem;color:var(--ash);margin:.3rem 0 .75rem;line-height:1.6;flex:1;}
+
+/* PRICE */
+.price-table{display:flex;gap:.35rem;flex-wrap:wrap;}
+.price-pill{display:flex;flex-direction:column;align-items:center;background:rgba(255,69,0,.09);border:1px solid rgba(255,69,0,.22);border-radius:6px;padding:.28rem .5rem;min-width:44px;}
+.price-pill .sz{font-size:.56rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--ash);line-height:1;}
+.price-pill .pr{font-family:'Bebas Neue',sans-serif;font-size:.95rem;color:var(--gold);line-height:1.1;}
+.price-single{font-family:'Bebas Neue',sans-serif;font-size:1.25rem;color:var(--gold);}
+.order-cta{margin-top:.65rem;display:block;width:100%;background:linear-gradient(135deg,var(--fire),var(--ember));color:#fff;border:none;border-radius:5px;padding:.5rem;font-size:.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .3s;font-family:'DM Sans',sans-serif;text-align:center;text-decoration:none;}
+.order-cta:hover{box-shadow:0 0 20px rgba(255,69,0,.55);}
+
+/* EXTRAS */
+.extras-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.75rem;}
+.extra-card{background:var(--dark);border:1px solid rgba(255,69,0,.1);border-radius:7px;padding:.85rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:.5rem;transition:all .3s;}
+.extra-card:hover{border-color:rgba(255,69,0,.3);transform:translateY(-3px);}
+.extra-name{font-size:.82rem;font-weight:600;color:var(--cream);}
+.extra-sub{font-size:.68rem;color:var(--ash);margin-top:.1rem;}
+.extra-price{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;color:var(--gold);flex-shrink:0;}
+
+/* EXPERIENCE */
+.exp-sec{padding:5rem 5%;}
+.exp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:2.5rem;}
+.exp-card{border:1px solid rgba(255,69,0,.1);border-radius:8px;overflow:hidden;background:rgba(255,69,0,.03);transition:all .4s;position:relative;}
+.exp-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:0;background:linear-gradient(to bottom,var(--fire),transparent);transition:height .4s;z-index:1;}
+.exp-card:hover{border-color:rgba(255,69,0,.28);transform:translateY(-6px);}
+.exp-card:hover::before{height:100%;}
+.exp-cimg{height:165px;overflow:hidden;}
+.exp-cimg img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s;}
+.exp-card:hover .exp-cimg img{transform:scale(1.07);}
+.exp-body{padding:1.3rem 1.5rem 1.7rem;}
+.exp-icon{font-size:1.4rem;color:var(--fire);margin-bottom:.75rem;}
+.exp-card h3{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:2px;color:var(--cream);margin-bottom:.5rem;}
+.exp-card p{color:var(--ash);font-size:.83rem;line-height:1.8;}
+
+/* STORES */
+.stores-sec{padding:5rem 5%;background:var(--char);}
+.s-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.8rem;max-width:1100px;margin:2.5rem auto 0;}
+.scard{border:1px solid rgba(255,179,71,.15);border-radius:9px;overflow:hidden;background:var(--dark);transition:all .4s;position:relative;}
+.scard:hover{border-color:var(--gold);box-shadow:0 20px 50px rgba(255,179,71,.1);transform:translateY(-5px);}
+.scard::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--fire),var(--gold));transform:scaleX(0);transform-origin:left;transition:transform .4s;}
+.scard:hover::after{transform:scaleX(1);}
+.scard-img{height:185px;overflow:hidden;position:relative;}
+.scard-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s;}
+.scard:hover .scard-img img{transform:scale(1.07);}
+.simg-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(13,9,5,.7),transparent 60%);}
+.scard-body{padding:1.5rem 1.7rem 1.7rem;}
+.snum{font-family:'Bebas Neue',sans-serif;font-size:3rem;color:rgba(255,179,71,.1);line-height:1;margin-bottom:.2rem;}
+.sname{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:2px;color:var(--gold);margin-bottom:.85rem;}
+.sinfo{display:flex;flex-direction:column;gap:.55rem;}
+.srow{display:flex;align-items:flex-start;gap:.6rem;font-size:.8rem;color:var(--ash);}
+.srow i{color:var(--fire);font-size:.78rem;flex-shrink:0;margin-top:3px;}
+.srow a{color:var(--ember);text-decoration:none;}
+.stags{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:1.1rem;}
+.stag{font-size:.6rem;letter-spacing:1.5px;text-transform:uppercase;padding:.22rem .65rem;border-radius:50px;border:1px solid rgba(255,69,0,.3);color:var(--ember);}
+
+/* TESTIMONIALS */
+.test-sec{padding:5rem 5%;overflow:hidden;}
+.test-hdr{text-align:center;margin-bottom:2.8rem;}
+.t-wrap{overflow:hidden;position:relative;}
+.t-wrap::before,.t-wrap::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;}
+.t-wrap::before{left:0;background:linear-gradient(to right,var(--dark),transparent);}
+.t-wrap::after{right:0;background:linear-gradient(to left,var(--dark),transparent);}
+.t-tr2{display:flex;gap:1.1rem;animation:tsl 30s linear infinite;width:max-content;}
+.t-tr2:hover{animation-play-state:paused;}
+@keyframes tsl{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.tcard{width:285px;flex-shrink:0;background:var(--char);border:1px solid rgba(255,69,0,.1);border-radius:9px;padding:1.5rem;transition:all .3s;}
+.tcard:hover{border-color:rgba(255,69,0,.3);}
+.tstars{display:flex;gap:.15rem;margin-bottom:.8rem;}
+.tstars i{font-size:.8rem;}
+.ts-fill{color:var(--gold);}
+.ts-empty{color:rgba(139,111,94,.25);}
+.ttext{font-family:'Playfair Display',serif;font-style:italic;font-size:.87rem;color:var(--cream);line-height:1.75;margin-bottom:.95rem;}
+.tauthor{display:flex;align-items:center;gap:.6rem;}
+.tavatar{width:33px;height:33px;background:linear-gradient(135deg,var(--fire),var(--ember));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;color:#fff;flex-shrink:0;}
+.tname{font-size:.79rem;font-weight:600;color:var(--cream);}
+.tloc{font-size:.65rem;color:var(--ash);}
+
+/* CONTACT */
+.cont-sec{padding:5rem 5%;background:var(--char);position:relative;}
+.cont-sec::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.c-inner{max-width:750px;margin:0 auto;text-align:center;}
+.c-inner > p{color:var(--ash);font-size:.9rem;line-height:1.85;margin:1.4rem 0 2.2rem;}
+.c-chs{display:flex;justify-content:center;gap:.9rem;flex-wrap:wrap;}
+.c-ch{display:flex;align-items:center;gap:.65rem;padding:.8rem 1.4rem;border:1px solid rgba(255,69,0,.2);border-radius:7px;background:rgba(255,69,0,.04);text-decoration:none;color:var(--cream);font-size:.82rem;transition:all .3s;}
+.c-ch:hover{border-color:var(--fire);background:rgba(255,69,0,.1);transform:translateY(-3px);}
+.c-ch i{font-size:1.1rem;color:var(--fire);}
+.ch-lbl{font-size:.64rem;text-transform:uppercase;letter-spacing:1px;color:var(--ash);}
+.ch-val{font-size:.84rem;font-weight:600;}
+
+/* FOOTER */
+footer{background:var(--dark);border-top:1px solid rgba(255,69,0,.1);padding:4rem 5% 2rem;}
+.f-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;padding-bottom:2.5rem;border-bottom:1px solid rgba(255,248,240,.06);}
+.f-brand p{color:var(--ash);font-size:.8rem;line-height:1.85;max-width:260px;}
+.fsocs{display:flex;gap:.5rem;margin-top:1.1rem;}
+.fsoc{width:33px;height:33px;border:1px solid rgba(255,248,240,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ash);text-decoration:none;transition:all .3s;}
+.fsoc:hover{border-color:var(--fire);color:var(--fire);}
+.f-col h4{font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:.92rem;color:var(--cream);margin-bottom:.9rem;}
+.f-col ul{list-style:none;display:flex;flex-direction:column;gap:.48rem;}
+.f-col ul a{color:var(--ash);text-decoration:none;font-size:.79rem;transition:color .3s;display:flex;align-items:center;gap:.4rem;}
+.f-col ul a:hover{color:var(--ember);}
+.f-col ul a i{color:var(--fire);font-size:.6rem;}
+.f-bot{display:flex;align-items:center;justify-content:space-between;padding-top:1.5rem;flex-wrap:wrap;gap:.8rem;}
+.f-bot p{color:var(--ash);font-size:.74rem;}
+.f-bot a{color:var(--ember);text-decoration:none;}
+
+/* LEGAL MODAL */
+.lmod{display:none;position:fixed;inset:0;z-index:99990;background:rgba(0,0,0,.93);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:1.5rem;}
+.lmod.open{display:flex;}
+.lcont{background:var(--char);border:1px solid rgba(255,69,0,.22);border-radius:9px;max-width:760px;width:100%;max-height:82vh;overflow-y:auto;padding:2.4rem;position:relative;}
+.lcont h2{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;color:var(--gold);margin-bottom:1.3rem;padding-bottom:.85rem;border-bottom:1px solid rgba(255,69,0,.2);}
+.lcont p,.lcont li{color:var(--ash);font-size:.82rem;line-height:1.9;margin-bottom:.65rem;}
+.lcont h3{color:var(--cream);font-size:.9rem;margin:1.2rem 0 .35rem;}
+.lcont a{color:var(--ember);}
+.lclose{position:absolute;top:1.1rem;right:1.1rem;background:rgba(255,69,0,.1);border:1px solid rgba(255,69,0,.3);color:var(--fire);width:32px;height:32px;border-radius:50%;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s;}
+.lclose:hover{background:var(--fire);color:#fff;}
+
+/* WHATSAPP */
+.wa-float{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;}
+.wa-tip{background:var(--char);border:1px solid rgba(37,211,102,.3);color:var(--cream);padding:.55rem .85rem;border-radius:8px;font-size:.74rem;max-width:180px;text-align:right;opacity:0;transform:translateY(8px) scale(.95);transition:all .3s;pointer-events:none;}
+.wa-tip strong{display:block;color:#25D366;margin-bottom:.1rem;}
+.wa-float:hover .wa-tip{opacity:1;transform:translateY(0) scale(1);}
+.wa-btn{background:#25D366;color:#fff;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.45rem;text-decoration:none;box-shadow:0 4px 18px rgba(37,211,102,.45);animation:wap 3s ease infinite;}
+.wa-btn:hover{transform:scale(1.1);}
+@keyframes wap{0%,100%{box-shadow:0 4px 18px rgba(37,211,102,.45)}50%{box-shadow:0 4px 28px rgba(37,211,102,.7),0 0 0 10px rgba(37,211,102,.08)}}
+
+/* REVEAL */
+.rv{opacity:0;transform:translateY(28px);transition:opacity .65s cubic-bezier(.23,1,.32,1),transform .65s cubic-bezier(.23,1,.32,1);}
+.rv.vis{opacity:1;transform:translateY(0);}
+.d1{transition-delay:.1s;}.d2{transition-delay:.2s;}.d3{transition-delay:.3s;}
+@keyframes fiu{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:1024px){
+  .about-inner{grid-template-columns:1fr;gap:3rem;}
+  .ab-img-w{max-width:400px;margin:0 auto;}
+  .exp-grid{grid-template-columns:1fr 1fr;}
+  .f-top{grid-template-columns:1fr 1fr;}
+  .app-ban{margin:0 3%;padding:2.2rem 2rem;}
+}
+@media(max-width:768px){
+  .nav-links{
+    display:none;position:fixed;
+    top:0;left:0;right:0;bottom:0;
+    background:rgba(13,9,5,.98);
+    flex-direction:column;align-items:center;justify-content:center;
+    gap:2rem;padding:5rem 2rem 2rem;
+  }
+  .nav-links.open{display:flex;}
+  .nav-links a{font-size:1.1rem;}
+  .hbg{display:flex;}
+  .hero{min-height:550px;}
+  .hero-title{letter-spacing:2px;}
+  .btn-fire,.btn-out{padding:.72rem 1.3rem;font-size:.78rem;}
+  .about-sec{padding:3.5rem 4%;}
+  .app-ban{flex-direction:column;text-align:center;margin:0 4%;padding:2rem 1.5rem;}
+  .app-ban p{max-width:100%;}
+  .phone-ico{font-size:3.8rem;}
+  .menu-sec{padding:3.5rem 4%;}
+  .mgrid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.75rem;}
+  .mcard-img{height:135px;}
+  .mcard-body{padding:.8rem .85rem .95rem;}
+  .mcard-name{font-size:1.05rem;}
+  .mcard-desc{font-size:.7rem;}
+  .extras-grid{grid-template-columns:1fr 1fr;}
+  .exp-sec{padding:3.5rem 4%;}
+  .exp-grid{grid-template-columns:1fr;}
+  .stores-sec{padding:3.5rem 4%;}
+  .s-grid{grid-template-columns:1fr;}
+  .test-sec{padding:3.5rem 4%;}
+  .cont-sec{padding:3.5rem 4%;}
+  .c-chs{flex-direction:column;align-items:stretch;}
+  footer{padding:3rem 4% 2rem;}
+  .f-top{grid-template-columns:1fr;}
+  .f-bot{flex-direction:column;text-align:center;}
+}
+@media(max-width:420px){
+  .mgrid{grid-template-columns:1fr 1fr;}
+  .mcard-img{height:115px;}
+  .mcard-body{padding:.65rem .7rem .8rem;}
+  .mcard-name{font-size:.92rem;}
+  .mcard-desc{font-size:.68rem;-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;}
+  .price-pill{min-width:38px;padding:.22rem .38rem;}
+  .price-pill .pr{font-size:.88rem;}
+  .tabs{gap:.3rem;}
+  .tab{font-size:.66rem;padding:.42rem .8rem;}
+  .extras-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div><div id="cur2"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="logo"><img src="images/logo.png" alt="PizzaHap"></a>
+  <ul class="nav-links" id="nl">
+    <li><a href="#about" onclick="closeNav()">Our Story</a></li>
+    <li><a href="#menu" onclick="closeNav()">Menu</a></li>
+    <li><a href="#stores" onclick="closeNav()">Stores</a></li>
+    <li><a href="#testimonials" onclick="closeNav()">Reviews</a></li>
+    <li><a href="#contact" onclick="closeNav()">Contact</a></li>
+    <li><a href="https://wa.me/916399050003?text=Hi%20PizzaHap!%20I%20want%20to%20place%20an%20order%20%F0%9F%8D%95" target="_blank" class="ncta"><i class="fa-solid fa-cart-shopping"></i> Order Now</a></li>
+  </ul>
+  <button class="hbg" id="hbg" onclick="toggleNav()"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div id="hslides">
+    <div class="hslide on" style="background-image:url('https://images.unsplash.com/photo-1513104890138-7c749659a591?w=1600&q=80');"></div>
+    <div class="hslide" style="background-image:url('https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=1600&q=80');"></div>
+    <div class="hslide" style="background-image:url('https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=1600&q=80');"></div>
+  </div>
+  <div class="hero-cont">
+    <div class="hero-tag"><i class="fa-solid fa-fire-flame-curved"></i>&nbsp; Crafted Fire. Real Flavor.</div>
+    <h1 class="hero-title">BORN FROM<br><span>FIRE.</span>MADE FOR YOU.</h1>
+    <p class="hero-sub">Hand-crafted pizzas, fire-kissed burgers &amp; bold bites — dine in or delivered hot to your door.</p>
+    <div class="hero-btns">
+      <a href="#menu" class="btn-fire"><i class="fa-solid fa-pizza-slice"></i>Explore Menu</a>
+      <a href="#stores" class="btn-out"><i class="fa-solid fa-location-dot"></i>Find a Store</a>
+    </div>
+  </div>
+  <div class="h-dots">
+    <button class="dot on" onclick="goSlide(0)"></button>
+    <button class="dot" onclick="goSlide(1)"></button>
+    <button class="dot" onclick="goSlide(2)"></button>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker" aria-hidden="true">
+  <div class="t-track">
+    <span class="t-item"><i class="fa-solid fa-fire"></i>&nbsp; Free Delivery on Orders ₹350+</span>
+    <span class="t-item"><i class="fa-solid fa-utensils"></i>&nbsp; Dine In Available</span>
+    <span class="t-item"><i class="fa-solid fa-sliders"></i>&nbsp; Fully Customisable</span>
+    <span class="t-item"><i class="fa-solid fa-store"></i>&nbsp; Stores Across Uttarakhand</span>
+    <span class="t-item"><i class="fa-brands fa-google-play"></i>&nbsp; App Launching on Play Store</span>
+    <span class="t-item"><i class="fa-solid fa-leaf"></i>&nbsp; Fresh Ingredients Daily</span>
+    <span class="t-item"><i class="fa-solid fa-truck-fast"></i>&nbsp; Order Online 24/7</span>
+    <span class="t-item"><i class="fa-solid fa-fire"></i>&nbsp; Free Delivery on Orders ₹350+</span>
+    <span class="t-item"><i class="fa-solid fa-utensils"></i>&nbsp; Dine In Available</span>
+    <span class="t-item"><i class="fa-solid fa-sliders"></i>&nbsp; Fully Customisable</span>
+    <span class="t-item"><i class="fa-solid fa-store"></i>&nbsp; Stores Across Uttarakhand</span>
+    <span class="t-item"><i class="fa-brands fa-google-play"></i>&nbsp; App Launching on Play Store</span>
+    <span class="t-item"><i class="fa-solid fa-leaf"></i>&nbsp; Fresh Ingredients Daily</span>
+    <span class="t-item"><i class="fa-solid fa-truck-fast"></i>&nbsp; Order Online 24/7</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about-sec" id="about">
+  <div class="about-inner">
+    <div class="ab-img-w rv">
+      <div class="ab-img"><img src="https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=800&q=85" alt="PizzaHap kitchen"></div>
+      <div class="ab-stats">
+        <div class="st"><div class="sn">2+</div><div class="sl">Stores in Uttarakhand</div></div>
+        <div class="st"><div class="sn">50+</div><div class="sl">Menu Items</div></div>
+        <div class="st"><div class="sn">4.8<i class="fa-solid fa-star" style="color:var(--gold);font-size:1.1rem;margin-left:2px"></i></div><div class="sl">Avg Rating</div></div>
+        <div class="st"><div class="sn">∞</div><div class="sl">Customise Options</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="slbl rv"><i class="fa-solid fa-fire-flame-curved"></i>&nbsp; Our Story</div>
+      <h2 class="stitle rv d1">We Don't Just Make Pizza.<br><em>We Ignite Cravings.</em></h2>
+      <p class="ab-p rv d2" style="margin-top:1.3rem"><strong>PizzaHap</strong> was born in the heart of Uttarakhand — where the mountains are bold, the air is pure, and food is a celebration. We started with one obsession: to bring <strong>world-class pizza and burgers</strong> to every corner of the hills. No shortcuts. No compromise.</p>
+      <p class="ab-p rv d3">From Karanpriyag to Almora, our stores are where locals and travelers unite over a shared language: <strong>seriously good food.</strong> Every dough is hand-stretched, every sauce made fresh, every bite crafted to make you come back for more.</p>
+      <div class="rv" style="margin-top:1.1rem">
+        <span class="pill"><i class="fa-solid fa-mountain"></i>&nbsp;Uttarakhand Grown</span>
+        <span class="pill"><i class="fa-solid fa-hand-sparkles"></i>&nbsp;Hand-Crafted Daily</span>
+        <span class="pill"><i class="fa-brands fa-google-play"></i>&nbsp;App Coming Soon</span>
+        <span class="pill"><i class="fa-solid fa-truck-fast"></i>&nbsp;Free Delivery</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APP BANNER -->
+<div class="app-ban rv" id="app">
+  <div>
+    <div class="pbadge"><i class="fa-solid fa-rocket"></i>&nbsp;Coming Soon</div>
+    <h3>PizzaHap App is Almost Here</h3>
+    <p>Order your favorites in seconds, track delivery live, and unlock exclusive app-only deals. Launching on Google Play Store very soon!</p>
+    <a href="#" class="gplay">
+      <i class="fa-brands fa-google-play" style="font-size:1.4rem;color:#01875F"></i>
+      <div><div style="font-size:.6rem;font-weight:400;letter-spacing:1px">GET IT ON</div><div>Google Play</div></div>
+    </a>
+  </div>
+  <i class="fa-solid fa-mobile-screen-button phone-ico"></i>
+</div>
+
+<!-- MENU -->
+<section class="menu-sec" id="menu">
+  <div class="mhdr">
+    <div class="slbl rv"><i class="fa-solid fa-bowl-food"></i>&nbsp;What We Serve</div>
+    <h2 class="stitle rv d1">Flavors That <em>Hit Different</em></h2>
+    <p class="rv d2">Every item made fresh. Every order customisable to your craving.</p>
+  </div>
+  <div class="delivery-notice rv">
+    <i class="fa-solid fa-motorcycle"></i> Min. Delivery Amount: <strong>₹350/-</strong> &nbsp;|&nbsp; <i class="fa-solid fa-truck-fast"></i> Free Delivery
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="tab on" onclick="showCat('all',this)"><i class="fa-solid fa-border-all"></i>&nbsp;All</button>
+    <button class="tab" onclick="showCat('veg-pizza',this)"><i class="fa-solid fa-pizza-slice"></i>&nbsp;Veg Pizza</button>
+    <button class="tab" onclick="showCat('nonveg-pizza',this)"><i class="fa-solid fa-pizza-slice"></i>&nbsp;Non-Veg Pizza</button>
+    <button class="tab" onclick="showCat('starters',this)"><i class="fa-solid fa-drumstick-bite"></i>&nbsp;Starters</button>
+    <button class="tab" onclick="showCat('burgers',this)"><i class="fa-solid fa-burger"></i>&nbsp;Burgers</button>
+    <button class="tab" onclick="showCat('rolls',this)"><i class="fa-solid fa-scroll"></i>&nbsp;Rolls</button>
+    <button class="tab" onclick="showCat('pasta',this)"><i class="fa-solid fa-bowl-rice"></i>&nbsp;Pasta &amp; More</button>
+    <button class="tab" onclick="showCat('drinks',this)"><i class="fa-solid fa-cup-straw"></i>&nbsp;Drinks</button>
+    <button class="tab" onclick="showCat('desserts',this)"><i class="fa-solid fa-cake-candles"></i>&nbsp;Desserts</button>
+  </div>
+  <div id="menu-container"></div>
+</section>
+
+<!-- EXPERIENCE -->
+<section class="exp-sec" id="experience">
+  <div style="text-align:center">
+    <div class="slbl rv"><i class="fa-solid fa-star"></i>&nbsp;How We Serve You</div>
+    <h2 class="stitle rv d1">Three Ways to <em>Get Your Fix</em></h2>
+  </div>
+  <div class="exp-grid">
+    <div class="exp-card rv">
+      <div class="exp-cimg"><img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=700&q=80" alt="Walk In"></div>
+      <div class="exp-body"><div class="exp-icon"><i class="fa-solid fa-store"></i></div><h3>Walk In &amp; Buy</h3><p>Step into any PizzaHap store and enjoy hot food immediately. No apps needed — pure, instant satisfaction.</p></div>
+    </div>
+    <div class="exp-card rv d1">
+      <div class="exp-cimg"><img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=700&q=80" alt="Dine In"></div>
+      <div class="exp-body"><div class="exp-icon"><i class="fa-solid fa-chair"></i></div><h3>Dine In</h3><p>Settle into our vibrant dining spaces and let our team serve you with real mountain hospitality.</p></div>
+    </div>
+    <div class="exp-card rv d2">
+      <div class="exp-cimg"><img src="https://images.unsplash.com/photo-1526367790999-0150786686a2?w=700&q=80" alt="Delivery"></div>
+      <div class="exp-body"><div class="exp-icon"><i class="fa-solid fa-truck-fast"></i></div><h3>Online Delivery</h3><p>Order online and get steaming hot food delivered free to your door. Minimum order ₹350. Always.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- STORES -->
+<section class="stores-sec" id="stores">
+  <div style="text-align:center">
+    <div class="slbl rv"><i class="fa-solid fa-location-dot"></i>&nbsp;Find Us Near You</div>
+    <h2 class="stitle rv d1">Our <em>Locations</em></h2>
+    <p class="rv d2" style="color:var(--ash);margin-top:.8rem;font-size:.88rem;max-width:420px;margin-left:auto;margin-right:auto">Two stores, one mission — the boldest food in the mountains.</p>
+  </div>
+  <div class="s-grid">
+    <div class="scard rv">
+      <div class="scard-img"><img src="https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=700&q=80" alt="Karanpriyag Store"><div class="simg-ov"></div></div>
+      <div class="scard-body">
+        <div class="snum">01</div><div class="sname">PizzaHap Karanpriyag</div>
+        <div class="sinfo">
+          <div class="srow"><i class="fa-solid fa-location-dot"></i><span>Karanpriyag, Chamoli, Uttarakhand – 246444</span></div>
+          <div class="srow"><i class="fa-solid fa-phone"></i><a href="tel:7351785168">7351785168</a></div>
+          <div class="srow"><i class="fa-solid fa-envelope"></i><a href="mailto:mukeshsingh9410508034@gmail.com" style="word-break:break-all">mukeshsingh9410508034@gmail.com</a></div>
+          <div class="srow"><i class="fa-solid fa-clock"></i><span>Mon–Sun: 10 AM – 10 PM</span></div>
+        </div>
+        <div class="stags"><span class="stag"><i class="fa-solid fa-chair"></i>&nbsp;Dine In</span><span class="stag"><i class="fa-solid fa-bag-shopping"></i>&nbsp;Takeaway</span><span class="stag"><i class="fa-solid fa-truck-fast"></i>&nbsp;Delivery</span></div>
+      </div>
+    </div>
+    <div class="scard rv d1">
+      <div class="scard-img"><img src="https://images.unsplash.com/photo-1534766555764-ce878a5e3a2b?w=700&q=80" alt="Almora Store"><div class="simg-ov"></div></div>
+      <div class="scard-body">
+        <div class="snum">02</div><div class="sname">PizzaHap Almora</div>
+        <div class="sinfo">
+          <div class="srow"><i class="fa-solid fa-location-dot"></i><span>Near Opp. Head Office, Mall Road, Almora, Uttarakhand – 263601</span></div>
+          <div class="srow"><i class="fa-solid fa-phone"></i><a href="tel:9634994234">9634994234</a></div>
+          <div class="srow"><i class="fa-solid fa-envelope"></i><a href="mailto:muke68adhikari@gmail.com">muke68adhikari@gmail.com</a></div>
+          <div class="srow"><i class="fa-solid fa-clock"></i><span>Mon–Sun: 10 AM – 10 PM</span></div>
+        </div>
+        <div class="stags"><span class="stag"><i class="fa-solid fa-chair"></i>&nbsp;Dine In</span><span class="stag"><i class="fa-solid fa-bag-shopping"></i>&nbsp;Takeaway</span><span class="stag"><i class="fa-solid fa-truck-fast"></i>&nbsp;Delivery</span><span class="stag"><i class="fa-solid fa-road"></i>&nbsp;Mall Road</span></div>
+      </div>
+    </div>
+    <div class="scard rv d2" style="border-style:dashed;border-color:rgba(255,179,71,.3)">
+      <div class="scard-img"><img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=700&q=80" alt="Coming Soon"><div class="simg-ov"></div></div>
+      <div class="scard-body">
+        <div class="snum" style="color:rgba(255,179,71,.08)">03</div>
+        <div class="sname" style="color:var(--ash)">Coming to You Soon</div>
+        <div class="pbadge" style="font-size:.62rem;padding:.32rem .85rem;margin-top:.5rem"><i class="fa-solid fa-rocket"></i>&nbsp;Expanding 2025</div>
+        <p style="color:var(--ash);font-size:.81rem;margin-top:.85rem;line-height:1.85">A third PizzaHap location is on the horizon. Watch this space for the big reveal.</p>
+        <a href="https://wa.me/916399050003?text=Hi%20PizzaHap!%20Notify%20me%20about%20the%20new%20store." target="_blank" class="btn-fire" style="margin-top:1.1rem;padding:.6rem 1.2rem;font-size:.72rem"><i class="fa-brands fa-whatsapp"></i>&nbsp;Get Notified</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="test-sec" id="testimonials">
+  <div class="test-hdr">
+    <div class="slbl rv"><i class="fa-solid fa-comments"></i>&nbsp;Real People, Real Flavour</div>
+    <h2 class="stitle rv d1">What Our <em>Fans Say</em></h2>
+  </div>
+  <div class="t-wrap"><div class="t-tr2" id="ttrack"></div></div>
+</section>
+
+<!-- CONTACT -->
+<section class="cont-sec" id="contact">
+  <div class="c-inner">
+    <div class="slbl rv"><i class="fa-solid fa-headset"></i>&nbsp;Get in Touch</div>
+    <h2 class="stitle rv d1">We'd Love to <em>Hear You</em></h2>
+    <p class="rv d2">Got a question, a craving, or a big order? Reach out any time.</p>
+    <div class="c-chs rv d3">
+      <a href="tel:7351785168" class="c-ch"><i class="fa-solid fa-phone"></i><div><div class="ch-lbl">Karanpriyag</div><div class="ch-val">7351785168</div></div></a>
+      <a href="tel:9634994234" class="c-ch"><i class="fa-solid fa-phone"></i><div><div class="ch-lbl">Almora</div><div class="ch-val">9634994234</div></div></a>
+      <a href="mailto:mukeshsingh9410508034@gmail.com" class="c-ch"><i class="fa-solid fa-envelope"></i><div><div class="ch-lbl">Email Us</div><div class="ch-val" style="font-size:.74rem;word-break:break-all">mukeshsingh9410508034@gmail.com</div></div></a>
+      <a href="https://wa.me/916399050003?text=Hi%20PizzaHap!%20I%20have%20a%20question." target="_blank" class="c-ch" style="border-color:rgba(37,211,102,.3)"><i class="fa-brands fa-whatsapp" style="color:#25D366;font-size:1.2rem"></i><div><div class="ch-lbl">WhatsApp</div><div class="ch-val" style="color:#25D366">Chat With Us</div></div></a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-top">
+    <div class="f-brand">
+      <img src="images/logo.png" alt="PizzaHap Logo" style="height:65px;margin-bottom:.7rem;">
+      <p>Crafted in the Himalayas. Delivered to your door. Uttarakhand's most loved pizza &amp; burger brand.</p>
+      <div class="fsocs">
+        <a href="#" class="fsoc"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="#" class="fsoc"><i class="fa-brands fa-instagram"></i></a>
+        <a href="https://wa.me/916399050003" target="_blank" class="fsoc"><i class="fa-brands fa-whatsapp"></i></a>
+        <a href="#" class="fsoc"><i class="fa-brands fa-youtube"></i></a>
+      </div>
+    </div>
+    <div class="f-col"><h4>Explore</h4><ul>
+      <li><a href="#about"><i class="fa-solid fa-chevron-right"></i>Our Story</a></li>
+      <li><a href="#menu"><i class="fa-solid fa-chevron-right"></i>Menu</a></li>
+      <li><a href="#stores"><i class="fa-solid fa-chevron-right"></i>Locations</a></li>
+      <li><a href="#testimonials"><i class="fa-solid fa-chevron-right"></i>Reviews</a></li>
+      <li><a href="#contact"><i class="fa-solid fa-chevron-right"></i>Contact</a></li>
+    </ul></div>
+    <div class="f-col"><h4>Services</h4><ul>
+      <li><a href="#experience"><i class="fa-solid fa-chevron-right"></i>Dine In</a></li>
+      <li><a href="#experience"><i class="fa-solid fa-chevron-right"></i>Takeaway</a></li>
+      <li><a href="#experience"><i class="fa-solid fa-chevron-right"></i>Online Delivery</a></li>
+      <li><a href="#app"><i class="fa-solid fa-chevron-right"></i>Mobile App</a></li>
+      <li><a href="https://wa.me/916399050003?text=Hi!%20I%20want%20to%20place%20a%20bulk%20order." target="_blank"><i class="fa-solid fa-chevron-right"></i>Bulk Orders</a></li>
+    </ul></div>
+    <div class="f-col"><h4>Legal</h4><ul>
+      <li><a href="#" onclick="openL('terms');return false;"><i class="fa-solid fa-chevron-right"></i>Terms &amp; Conditions</a></li>
+      <li><a href="#" onclick="openL('refund');return false;"><i class="fa-solid fa-chevron-right"></i>Return &amp; Refund Policy</a></li>
+      <li><a href="#" onclick="openL('privacy');return false;"><i class="fa-solid fa-chevron-right"></i>Privacy Policy</a></li>
+      <li><a href="#" onclick="openL('shipping');return false;"><i class="fa-solid fa-chevron-right"></i>Shipping &amp; Payment</a></li>
+    </ul></div>
+  </div>
+  <div class="f-bot">
+    <p>© 2024 PizzaHap. All rights reserved. Made with <i class="fa-solid fa-fire" style="color:var(--fire)"></i> in Uttarakhand, India.</p>
+    <p>Grievance Officer: <a href="mailto:mukeshsingh9410508034@gmail.com">mukeshsingh9410508034@gmail.com</a> | Mon–Fri 9AM–6PM</p>
+  </div>
+</footer>
+
+<!-- LEGAL MODAL -->
+<div class="lmod" id="lmod" onclick="closeLOut(event)">
+  <div class="lcont">
+    <button class="lclose" onclick="closeL()"><i class="fa-solid fa-xmark"></i></button>
+    <div id="lbody"></div>
+  </div>
+</div>
+
+<!-- WHATSAPP FLOAT -->
+<div class="wa-float">
+  <div class="wa-tip"><strong><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp!</strong>Tap to chat with us instantly</div>
+  <a href="https://wa.me/916399050003?text=Hi%20PizzaHap!%20%F0%9F%8D%95%20I'd%20like%20to%20place%20an%20order." target="_blank" class="wa-btn"><i class="fa-brands fa-whatsapp"></i></a>
+</div>
+
+<script>
+// CURSOR
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+let mx=0,my=0,fx=0,fy=0;
+if(window.matchMedia('(hover:hover)').matches){
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.transform=`translate(${mx-7}px,${my-7}px)`;});
+  (function a(){fx+=(mx-fx)*.12;fy+=(my-fy)*.12;cur2.style.transform=`translate(${fx-19}px,${fy-19}px)`;requestAnimationFrame(a);})();
+}
+
+// NAV
+window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('sc',scrollY>55));
+function toggleNav(){document.getElementById('nl').classList.toggle('open');document.getElementById('hbg').classList.toggle('open');document.body.style.overflow=document.getElementById('nl').classList.contains('open')?'hidden':'';}
+function closeNav(){document.getElementById('nl').classList.remove('open');document.getElementById('hbg').classList.remove('open');document.body.style.overflow='';}
+
+// HERO
+let cs=0;const slides=document.querySelectorAll('.hslide'),dots=document.querySelectorAll('.dot');
+function goSlide(n){slides[cs].classList.remove('on');dots[cs].classList.remove('on');cs=n;slides[cs].classList.add('on');dots[cs].classList.add('on');}
+setInterval(()=>goSlide((cs+1)%slides.length),5000);
+
+// MENU DATA
+const WA='https://wa.me/916399050003?text=Hi%20PizzaHap!%20I%20want%20to%20order%20';
+const cats=[
+  {id:'veg-pizza',label:'Veg Pizzas',icon:'fa-pizza-slice',items:[
+    {n:'Cheese Tomato Onion',d:'Classic combo of fresh tomato, onion & cheese on our signature base.',t:'veg',p:{S:100,M:200,L:360}},
+    {n:'One Love Onion',d:'Simple, bold & loaded with sweet caramelized onions.',t:'veg',p:{S:100,M:200,L:360}},
+    {n:'Classic Veg',d:'Capsicum, onion & jalapeño — the all-time crowd favourite.',t:'veg',p:{S:130,M:240,L:400}},
+    {n:'Double Cheese Margherita',d:'Extra cheese, extra love. The OG Margherita dialled up.',t:'veg',p:{S:190,M:370,L:550}},
+    {n:'Just Veggie',d:'Onion, capsicum, green chilly & mushroom — fresh garden vibes.',t:'veg',p:{S:190,M:370,L:550}},
+    {n:'Triple Tango',d:'Corn, red pepper & cheese corn in a triple-flavour dance.',t:'veg',p:{S:190,M:370,L:550}},
+    {n:'Cheese Corn',d:'Sweet corn and molten cheese — simple, satisfying perfection.',t:'veg',p:{S:190,M:370,L:550}},
+    {n:'Veg Sausage',d:'Onion, mushroom, corn & cheese with veg sausage topping.',t:'veg',p:{S:190,M:370,L:550}},
+    {n:'5 Star Deluxe',d:'Capsicum, jalapeño, babycorn & paneer — a premium treat.',t:'veg',p:{S:230,M:400,L:590}},
+    {n:'Tandoori Paneer',d:'Smoky tandoori sauce with juicy paneer chunks.',t:'veg',p:{S:230,M:400,L:590}},
+    {n:'Tandoori Special',d:'Tandoori sauce, tandoori paneer & onion — bold & fragrant.',t:'veg',p:{S:230,M:400,L:590}},
+    {n:'Pizza Pasta',d:'The best of both worlds — pizza meets pasta flavours.',t:'veg',p:{S:230,M:400,L:590}},
+    {n:'Veg Mexicano',d:'Veg Mexican filling, capsicum, jalapeño & onion with a kick.',t:'veg',p:{S:230,M:400,L:590}},
+    {n:'Exotic Special',d:'Onion, red pepper, jalapeño, capsicum & paneer — the works.',t:'veg',p:{S:240,M:450,L:620}},
+    {n:'Veg Extravaganza',d:'Olives, onion, mushroom, capsicum & jalapeño — a feast.',t:'veg',p:{S:240,M:450,L:620}},
+    {n:'Veg Supreme',d:'Olives, jalapeño, paneer, sausage & corn — ultimate veg.',t:'veg',p:{S:240,M:450,L:620}},
+    {n:'New Veg Korean',d:'Onion, red pepper, jalapeño, corn & paneer in Korean style.',t:'veg',p:{S:240,M:450,L:620}},
+  ]},
+  {id:'nonveg-pizza',label:'Non-Veg Pizzas',icon:'fa-pizza-slice',items:[
+    {n:'Barbecue Chicken',d:'Cheese, onion & BBQ chicken on a smoky base.',t:'nonveg',p:{S:150,M:300,L:450}},
+    {n:'Chicken Tikka',d:'Onion, capsicum, chicken tikka & coriander — Indian at heart.',t:'nonveg',p:{S:220,M:390,L:590}},
+    {n:'Chicken Supreme',d:'Chicken sausage, tikka, kheema & mushroom — maximum chicken.',t:'nonveg',p:{S:220,M:390,L:590}},
+    {n:'Chicken Sausage',d:'Onion, capsicum, sausage & chicken sausage — classic combo.',t:'nonveg',p:{S:220,M:390,L:590}},
+    {n:'Non Veg Salami',d:'Salami, tomato & jalapeño — bold European flavours.',t:'nonveg',p:{S:220,M:390,L:590}},
+    {n:'Hawaiian Hit',d:'Spicy chicken, green chilly, red pepper & pineapple.',t:'nonveg',p:{S:310,M:470,L:650}},
+    {n:'Chicken Dominator',d:'Pepperoni, chicken, olives, bacon & sausage — the ultimate.',t:'nonveg',p:{S:310,M:470,L:650}},
+    {n:'Chicken Mexican',d:'Chicken, corn & green chilly with a Mexican punch.',t:'nonveg',p:{S:310,M:470,L:650}},
+    {n:'Special Tandoori Chicken',d:'Tandoori sauce, tandoori chicken, capsicum, onion & red pepper.',t:'nonveg',p:{S:310,M:470,L:650}},
+    {n:'Chicken Dominator Special',d:'Barbecue sauce, chicken sausage, chicken tikka & chicken meatball.',t:'nonveg',single:470},
+    {n:'Bollywood Pizza',d:'Chicken, spicy chicken & sweet corn — a Bollywood blockbuster.',t:'nonveg',single:470},
+  ]},
+  {id:'starters',label:'Starters',icon:'fa-drumstick-bite',items:[
+    {n:'Cheesy Bites',d:'Golden cheese-stuffed bites — addictive starters.',t:'veg',single:120},
+    {n:'Stuffed Garlic Bread',d:'Oven-baked garlic bread stuffed with cheesy goodness.',t:'veg',single:120},
+    {n:'Non Veg Stuffed Garlic Bread',d:'Garlic bread loaded with non-veg filling.',t:'nonveg',single:150},
+    {n:'French Fries',d:'Crispy golden fries with our secret seasoning.',t:'veg',single:100},
+    {n:'Veg Schezwan Pocket',d:'Crispy pocket stuffed with spicy Schezwan veg filling.',t:'veg',single:150},
+    {n:'Non Veg Schezwan Pocket',d:'Crispy pocket with fiery non-veg Schezwan filling.',t:'nonveg',single:180},
+    {n:'Veg Taco',d:'Crunchy shell filled with fresh veg and sauces.',t:'veg',single:120},
+    {n:'Paneer Taco',d:'Spiced paneer in a crispy taco shell.',t:'veg',single:150},
+    {n:'Non Veg Taco',d:'Flavourful non-veg filling in a crunchy taco.',t:'nonveg',single:180},
+    {n:'Chicken Wings (5 pcs)',d:'Juicy chicken wings, crispy outside, tender inside.',t:'nonveg',single:180},
+    {n:'Chicken Wings Parcel',d:'Chicken wing parcel add-on.',t:'nonveg',single:60},
+    {n:'Chicken Kabab',d:'Tender chicken kababs — perfectly spiced.',t:'nonveg',range:'40 / 80'},
+  ]},
+  {id:'burgers',label:'Burgers',icon:'fa-burger',items:[
+    {n:'Veg Burger',d:'Classic veggie patty with fresh lettuce, tomato & sauce.',t:'veg',single:60},
+    {n:'Paneer Burger',d:'Spiced paneer patty in a toasted bun.',t:'veg',single:80},
+    {n:'Premium Veg Burger',d:'Elevated veggie burger with premium toppings.',t:'veg',single:100},
+    {n:'Premium Non Veg Burger',d:'Premium non-veg patty with signature sauce.',t:'nonveg',single:120},
+    {n:'Korean Veg Burger',d:'Korean-style veg burger with a bold sauce.',t:'veg',single:120},
+    {n:'Korean Non Veg Burger',d:'Korean-style non-veg burger — rich & flavourful.',t:'nonveg',single:140},
+    {n:'Veg Tandoori Burger',d:'Tandoori-spiced veg patty in a soft bun.',t:'veg',single:100},
+    {n:'Non Veg Tandoori Burger',d:'Tandoori chicken patty with fresh toppings.',t:'nonveg',single:120},
+  ]},
+  {id:'rolls',label:'Rolls',icon:'fa-scroll',items:[
+    {n:'Veg Kathi Roll',d:'Fresh veggies wrapped in a soft paratha.',t:'veg',single:50},
+    {n:'Paneer Kathi Roll',d:'Spiced paneer wrapped in a soft paratha.',t:'veg',single:80},
+    {n:'Chicken Kathi Roll',d:'Juicy chicken filling in a soft paratha roll.',t:'nonveg',single:100},
+    {n:'Veg Mayo Roll',d:'Creamy mayo and veggies in a soft roll.',t:'veg',single:60},
+    {n:'Non Veg Mayo Roll',d:'Non-veg filling with creamy mayo in a roll.',t:'nonveg',single:80},
+  ]},
+  {id:'pasta',label:'Pasta, Sandwiches & More',icon:'fa-bowl-rice',items:[
+    {n:'Veg Sandwich',d:'Classic veg sandwich with fresh fillings.',t:'veg',single:80},
+    {n:'Cheese Sandwich',d:'Gooey cheese stuffed between toasted bread.',t:'veg',single:100},
+    {n:'Non Veg Sandwich',d:'Tasty non-veg filling in a grilled sandwich.',t:'nonveg',single:120},
+    {n:'Burger Pizza',d:'A delicious burger-pizza mashup.',t:'veg',single:90},
+    {n:'Veg Red Sauce Pasta',d:'Pasta tossed in rich tomato red sauce.',t:'veg',single:120},
+    {n:'Non Veg Red Sauce Pasta',d:'Pasta in red sauce with non-veg toppings.',t:'nonveg',single:140},
+    {n:'Veg White Sauce Pasta',d:'Creamy white sauce pasta with veggies.',t:'veg',single:120},
+    {n:'Non Veg White Sauce Pasta',d:'White sauce pasta with non-veg toppings.',t:'nonveg',single:140},
+    {n:'Cheese White Sauce Pasta',d:'Extra cheesy white sauce pasta — indulgent.',t:'veg',single:150},
+  ]},
+  {id:'drinks',label:'Beverages & Shakes',icon:'fa-cup-straw',items:[
+    {n:'Cold Coffee',d:'Chilled blended coffee — perfect cooldown.',t:'veg',single:70},
+    {n:'Hot Coffee',d:'Rich, aromatic hot coffee.',t:'veg',single:40},
+    {n:'Hot Tea',d:'Fresh brewed hot tea.',t:'veg',single:20},
+    {n:'Green Mojito',d:'Refreshing minty green mojito.',t:'veg',single:60},
+    {n:'Mango Shake',d:'Thick, creamy mango milkshake.',t:'veg',single:60},
+    {n:'Pineapple Shake',d:'Tropical pineapple milkshake.',t:'veg',single:60},
+    {n:'Strawberry Shake',d:'Sweet strawberry milkshake.',t:'veg',single:60},
+    {n:'Butter Scotch Shake',d:'Rich butterscotch milkshake.',t:'veg',single:60},
+    {n:'Litchi Shake',d:'Delicate litchi milkshake.',t:'veg',single:60},
+  ]},
+  {id:'desserts',label:'Desserts',icon:'fa-cake-candles',items:[
+    {n:'Chocolate Cake',d:'Moist, rich chocolate cake slice.',t:'veg',single:80},
+    {n:'Choco Bomb Mousse Cake',d:'Decadent chocolate mousse bomb cake.',t:'veg',single:100},
+  ]},
+];
+
+const extras=[
+  {n:'Double Burst Crust',s:'Chicago Thin / Medium / Double Burst upgrade',pr:'+ ₹70'},
+  {n:'Extra Cheese Topping',s:'Large pizza only',pr:'+ ₹80'},
+  {n:'Veg Topping',s:'Large pizza only',pr:'+ ₹70'},
+  {n:'Non-Veg Topping',s:'Large pizza only',pr:'+ ₹90'},
+  {n:'Jalapeño Dip',s:'',pr:'₹30'},
+  {n:'Cheese Dip',s:'',pr:'₹30'},
+];
+
+function prH(item){
+  if(item.p) return '<div class="price-table">'+Object.entries(item.p).map(([sz,pr])=>`<div class="price-pill"><span class="sz">${sz}</span><span class="pr">₹${pr}</span></div>`).join('')+'</div>';
+  if(item.range) return `<div class="price-single">₹${item.range}</div>`;
+  return `<div class="price-single">₹${item.single}</div>`;
+}
+
+function cardH(item){
+  const wt=encodeURIComponent(item.n);
+  return `<div class="mcard rv">
+    <div class="mcard-img">
+      <div class="img-ph"><i class="fa-solid fa-${item.t==='nonveg'?'drumstick-bite':'seedling'}"></i><span>Photo Coming Soon</span></div>
+      <div class="type-dot ${item.t}"></div>
+    </div>
+    <div class="mcard-body">
+      <div class="mcard-name">${item.n}</div>
+      <div class="mcard-desc">${item.d}</div>
+      ${prH(item)}
+      <a href="${WA}${wt}" target="_blank" class="order-cta"><i class="fa-brands fa-whatsapp"></i>&nbsp;Order via WhatsApp</a>
+    </div>
+  </div>`;
+}
+
+function renderMenu(){
+  const cont=document.getElementById('menu-container');
+  cont.innerHTML=cats.map(cat=>`
+    <div class="menu-category" data-cat="${cat.id}">
+      <div class="cat-title"><i class="fa-solid ${cat.icon}"></i>${cat.label}</div>
+      <div class="mgrid">${cat.items.map(cardH).join('')}</div>
+    </div>
+    ${cat.id==='veg-pizza'?`<div class="menu-category" data-cat="veg-pizza" style="margin-top:-1.5rem;margin-bottom:2.5rem;"><div class="cat-title" style="font-size:1.2rem;color:var(--ash);border-color:rgba(155,127,110,.12)"><i class="fa-solid fa-plus"></i>Crust, Toppings &amp; Dips</div><div class="extras-grid">${extras.map(e=>`<div class="extra-card"><div><div class="extra-name">${e.n}</div>${e.s?`<div class="extra-sub">${e.s}</div>`:''}</div><div class="extra-price">${e.pr}</div></div>`).join('')}</div></div>`:''}
+  `).join('');
+  setTimeout(()=>cont.querySelectorAll('.rv').forEach(el=>obs.observe(el)),60);
+}
+renderMenu();
+
+function showCat(id,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.menu-category').forEach(c=>{c.style.display=(id==='all'||c.dataset.cat===id)?'block':'none';});
+}
+
+// TESTIMONIALS
+const tests=[
+  {r:5,t:'Best pizza in all of Uttarakhand. The Tandoori Special hits different every single time!',n:'R. Sharma',l:'Almora'},
+  {r:5,t:'Ordered online and it arrived HOT. Free delivery is unreal value. PizzaHap is the real deal.',n:'P. Bisht',l:'Chamoli'},
+  {r:5,t:'Dined in at the Almora store — cozy vibe, friendly staff. The Korean Burger is fire.',n:'A. Negi',l:'Almora'},
+  {r:5,t:'The Veg Extravaganza pizza is my weekly ritual. No one else in the hills comes close.',n:'S. Rawat',l:'Karanpriyag'},
+  {r:4,t:'Customised my pizza exactly how I wanted. The Chicken Dominator is an absolute must-order!',n:'M. Joshi',l:'Almora'},
+  {r:5,t:'Quick delivery, amazing taste, very reasonable prices. PizzaHap is Uttarakhand\'s pride!',n:'K. Pandey',l:'Chamoli'},
+  {r:5,t:'Walked in for a quick bite and ended up ordering two more pizzas. Absolutely addictive!',n:'V. Thapliyal',l:'Karanpriyag'},
+  {r:4,t:'The Veg Supreme is a masterpiece. Fresh toppings, perfect crust. Highly recommend!',n:'D. Arora',l:'Almora'},
+];
+(()=>{
+  const tr=document.getElementById('ttrack');
+  const all=[...tests,...tests];
+  tr.innerHTML=all.map(t=>`<div class="tcard"><div class="tstars">${[...Array(5)].map((_,i)=>`<i class="fa-solid fa-star ${i<t.r?'ts-fill':'ts-empty'}"></i>`).join('')}</div><p class="ttext">"${t.t}"</p><div class="tauthor"><div class="tavatar">${t.n[0]}</div><div><div class="tname">${t.n}</div><div class="tloc"><i class="fa-solid fa-location-dot" style="color:var(--fire);margin-right:.2rem"></i>${t.l}</div></div></div></div>`).join('');
+})();
+
+// SCROLL REVEAL
+const obs=new IntersectionObserver(e=>{e.forEach(en=>{if(en.isIntersecting)en.target.classList.add('vis');});},{threshold:.06});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+
+// LEGAL
+const LD={
+  terms:{title:'Terms & Conditions',body:'<p><strong>Updated: 2024-07-03</strong></p><h3>General Terms</h3><p>By accessing and placing an order with PizzaHap, you confirm that you are in agreement with and bound by the terms of service outlined below. Under no circumstances shall PizzaHap be liable for any direct, indirect, special, incidental, or consequential damages arising out of the use of our services.</p><h3>Payment</h3><p>By providing payment information, you authorize PizzaHap to invoice your account for applicable fees. PizzaHap reserves the right to change prices at any time.</p><h3>Intellectual Property</h3><p>All website content is owned by PizzaHap and protected under Indian and international copyright laws.</p><h3>Contact</h3><p>Email: <a href="mailto:mukeshsingh9410508034@gmail.com">mukeshsingh9410508034@gmail.com</a> | Phone: 7351785168</p>'},
+  refund:{title:'Return & Refund Policy',body:'<p><strong>Updated: 2024-07-03</strong></p><p>If you are not happy with your purchase, we accept a return of an unused product within <strong>1 day</strong> from the date of delivery. Refunds are processed as per applicable RBI guidelines and may take <strong>7–14 additional business days</strong>.</p><p>Contact: <a href="mailto:mukeshsingh9410508034@gmail.com">mukeshsingh9410508034@gmail.com</a> | <a href="tel:7351785168">7351785168</a></p>'},
+  privacy:{title:'Privacy Policy',body:'<p><strong>Updated: 2024-07-03</strong></p><p>PizzaHap takes security and privacy with the utmost regard. We collect information you provide when ordering or contacting us — including name, email, phone, and payment details. We do not sell your personal information.</p><h3>Grievance Officer</h3><p>PizzaHap, Karanpriyag | Phone: 7351785168 | Email: <a href="mailto:mukeshsingh9410508034@gmail.com">mukeshsingh9410508034@gmail.com</a></p>'},
+  shipping:{title:'Shipping & Payment Policy',body:'<p><strong>Updated: 2024-07-03</strong></p><h3>Delivery</h3><p>All orders above <strong>₹350</strong> are delivered free of charge. Minimum delivery amount: ₹350/-</p><h3>Payment Modes</h3><p>Cash on Delivery (COD), Internet Banking, Visa, MasterCard, Debit Cards, UPI/IMPS.</p>'},
+};
+function openL(k){document.getElementById('lbody').innerHTML=`<h2>${LD[k].title}</h2>${LD[k].body}`;document.getElementById('lmod').classList.add('open');document.body.style.overflow='hidden';}
+function closeL(){document.getElementById('lmod').classList.remove('open');document.body.style.overflow='';}
+function closeLOut(e){if(e.target===document.getElementById('lmod'))closeL();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeL();});
+</script>
+</body>
+</html>
