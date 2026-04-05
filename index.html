@@ -579,7 +579,7 @@ footer{background:var(--dark);border-top:1px solid rgba(255,69,0,.1);padding:4re
     <div class="f-col"><h4>Legal</h4><ul>
       <li><a href="#" onclick="openL('terms');return false;"><i class="fa-solid fa-chevron-right"></i>Terms &amp; Conditions</a></li>
       <li><a href="#" onclick="openL('refund');return false;"><i class="fa-solid fa-chevron-right"></i>Return &amp; Refund Policy</a></li>
-      <li><a href="#" onclick="openL('privacy');return false;"><i class="fa-solid fa-chevron-right"></i>Privacy Policy</a></li>
+      <li><a href="privacy-policy.html"><i class="fa-solid fa-chevron-right"></i>Privacy Policy</a></li>
       <li><a href="#" onclick="openL('shipping');return false;"><i class="fa-solid fa-chevron-right"></i>Shipping &amp; Payment</a></li>
     </ul></div>
   </div>
@@ -624,6 +624,97 @@ setInterval(()=>goSlide((cs+1)%slides.length),5000);
 
 // MENU DATA
 const WA='https://wa.me/916399050003?text=Hi%20PizzaHap!%20I%20want%20to%20order%20';
+
+// Image map: menu item name → local file or Unsplash URL
+const imgMap={
+  // ── VEG PIZZAS (local) ──
+  'Cheese Tomato Onion':'images/CheeseTomato.jpeg',
+  'One Love Onion':'images/OneLoveOnion.jpeg',
+  'Cheese Corn':'images/CheeseCorn.jpeg',
+  'Double Cheese Margherita':'images/CheeseMargherita.jpeg',
+  'Just Veggie':'images/JustVeggie.jpeg',
+  'Triple Tango':'images/TripleTengo.jpeg',
+  '5 Star Deluxe':'images/5StarDeluxe.jpeg',
+  'Tandoori Paneer':'images/TandooriPaneer.jpeg',
+  'Tandoori Special':'images/TandooriSpecial.jpeg',
+  'Pizza Pasta':'images/PizzaPasta.jpeg',
+  'Veg Mexicano':'images/VegMexicano.jpeg',
+  'Veg Extravaganza':'images/VegExtravaganza.jpeg',
+  'Veg Supreme':'images/VegSupremo.jpeg',
+  'New Veg Korean':'images/NewVegKorean.jpeg',
+  // ── VEG PIZZAS (Unsplash) ──
+  'Classic Veg':'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=600&q=80',
+  'Veg Sausage':'https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?w=600&q=80',
+  'Exotic Special':'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=600&q=80',
+  // ── NON-VEG PIZZAS (local) ──
+  'Barbecue Chicken':'images/BarbequeChicken.jpeg',
+  'Chicken Tikka':'images/ChickenTikka.jpeg',
+  'Chicken Supreme':'images/ChickenSupremo.jpeg',
+  'Chicken Dominator':'images/ChickenDominator.jpeg',
+  'Special Tandoori Chicken':'images/SpecialTandooriChicken.jpeg',
+  'Bollywood Pizza':'images/BollywoodSpicy.jpeg',
+  'New Non Veg Korean Pizza':'images/NewNonVegKoreanPizza.jpeg',
+  'Non Veg Salsa Mexicano':'images/NonVegSalsaMexicano.jpeg',
+  'Non Veg Schezwan':'images/NonShezwan.jpeg',
+  // ── NON-VEG PIZZAS (Unsplash) ──
+  'Hawaiian Hit':'https://images.unsplash.com/photo-1565299507177-b0ac66763828?w=600&q=80',
+  'Chicken Mexican':'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&q=80',
+  'Chicken Sausage':'https://images.unsplash.com/photo-1548369937-47519962c11a?w=600&q=80',
+  'Non Veg Salami':'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=600&q=80',
+  'Chicken Dominator Special':'https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?w=600&q=80',
+  // ── STARTERS (local + Unsplash) ──
+  'Cheesy Bites':'images/Startermenu.jpeg',
+  'Stuffed Garlic Bread':'images/Startermenu.jpeg',
+  'Non Veg Stuffed Garlic Bread':'images/nonVegStuffedGarlicBread.png',
+  'French Fries':'https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?w=600&q=80',
+  'Veg Schezwan Pocket':'images/VegShezwan.jpeg',
+  'Non Veg Schezwan Pocket':'https://images.unsplash.com/photo-1606755456206-b25206cde27e?w=600&q=80',
+  'Veg Taco':'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600&q=80',
+  'Paneer Taco':'https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?w=600&q=80',
+  'Non Veg Taco':'https://images.unsplash.com/photo-1552332386-f8dd00dc2f85?w=600&q=80',
+  'Chicken Wings (5 pcs)':'https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=600&q=80',
+  'Chicken Wings Parcel':'https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=600&q=80',
+  'Chicken Kabab':'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=600&q=80',
+  // ── BURGERS ──
+  'Veg Burger':'https://images.unsplash.com/photo-1550547660-d9450f859349?w=600&q=80',
+  'Paneer Burger':'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80',
+  'Premium Veg Burger':'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=600&q=80',
+  'Premium Non Veg Burger':'https://images.unsplash.com/photo-1553979459-d2229ba7433b?w=600&q=80',
+  'Korean Veg Burger':'images/koreanVegBurger.png',
+  'Korean Non Veg Burger':'https://images.unsplash.com/photo-1606755456206-b25206cde27e?w=600&q=80',
+  'Veg Tandoori Burger':'https://images.unsplash.com/photo-1534939561126-855b8675edd7?w=600&q=80',
+  'Non Veg Tandoori Burger':'https://images.unsplash.com/photo-1609167830220-7164aa360951?w=600&q=80',
+  // ── ROLLS ──
+  'Veg Kathi Roll':'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=600&q=80',
+  'Paneer Kathi Roll':'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&q=80',
+  'Chicken Kathi Roll':'https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=600&q=80',
+  'Veg Mayo Roll':'https://images.unsplash.com/photo-1632778149955-e80f8ceca2e8?w=600&q=80',
+  'Non Veg Mayo Roll':'images/mayoROll.png',
+  // ── PASTA, SANDWICHES & MORE ──
+  'Veg Sandwich':'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=600&q=80',
+  'Cheese Sandwich':'https://images.unsplash.com/photo-1481070555726-e2fe8357725c?w=600&q=80',
+  'Non Veg Sandwich':'https://images.unsplash.com/photo-1509722747041-616f39b57569?w=600&q=80',
+  'Burger Pizza':'https://images.unsplash.com/photo-1594007654729-407eedc4be65?w=600&q=80',
+  'Veg Red Sauce Pasta':'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=600&q=80',
+  'Non Veg Red Sauce Pasta':'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=600&q=80',
+  'Veg White Sauce Pasta':'https://images.unsplash.com/photo-1600803907087-f56d462fd26b?w=600&q=80',
+  'Non Veg White Sauce Pasta':'images/WhiteSaucePasta.png',
+  'Cheese White Sauce Pasta':'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=600&q=80',
+  // ── BEVERAGES ──
+  'Cold Coffee':'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&q=80',
+  'Hot Coffee':'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&q=80',
+  'Hot Tea':'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80',
+  'Green Mojito':'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80',
+  'Mango Shake':'images/mango.png',
+  'Pineapple Shake':'images/PineappleShake.png',
+  'Strawberry Shake':'https://images.unsplash.com/photo-1553530979-fbb9e4aee36f?w=600&q=80',
+  'Butter Scotch Shake':'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600&q=80',
+  'Litchi Shake':'images/litchi.png',
+  // ── DESSERTS ──
+  'Chocolate Cake':'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&q=80',
+  'Choco Bomb Mousse Cake':'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600&q=80',
+};
+
 const cats=[
   {id:'veg-pizza',label:'Veg Pizzas',icon:'fa-pizza-slice',items:[
     {n:'Cheese Tomato Onion',d:'Classic combo of fresh tomato, onion & cheese on our signature base.',t:'veg',p:{S:100,M:200,L:360}},
@@ -733,9 +824,13 @@ function prH(item){
 
 function cardH(item){
   const wt=encodeURIComponent(item.n);
+  const imgSrc=imgMap[item.n];
+  const imgHtml=imgSrc
+    ?`<img src="${imgSrc}" alt="${item.n}" loading="lazy">`
+    :`<div class="img-ph"><i class="fa-solid fa-${item.t==='nonveg'?'drumstick-bite':'seedling'}"></i><span>Photo Coming Soon</span></div>`;
   return `<div class="mcard rv">
     <div class="mcard-img">
-      <div class="img-ph"><i class="fa-solid fa-${item.t==='nonveg'?'drumstick-bite':'seedling'}"></i><span>Photo Coming Soon</span></div>
+      ${imgHtml}
       <div class="type-dot ${item.t}"></div>
     </div>
     <div class="mcard-body">
